@@ -1,0 +1,114 @@
+#!/system/bin/sh
+# Perintah terminal dibawah adalah opensource, semua orang dapat menggubah perintah dibawah dan bukan komentar disini
+# Di buat oleh Nano Project
+# Di distribusikan secara resmi oleh Bagi Bray - Berbagi Informasi Dan Tips
+# https://www.bagibray.top
+# Semua komentar disini tidak pernah di ijinkan untuk dihapus
+# Copyright © 2017 Bagi Bray - Berbagi Informasi Dan Tips - All Right Reserved
+
+if [ ! -f /data/bckprstr ]; then
+		komando="2. Nonaktifkan AdBlock Sementara"
+	else
+		komando="2. Aktifkan AdBlock Kembali"
+	fi
+	echo ""
+	echo "========================================================="
+	echo "                       Blokir Iklan                      "
+	echo "                                                         "
+	echo "                https://www.bagibray.top                 "
+	echo " Copyright © 2017 Bagi Bray - Berbagi Informasi Dan Tips "
+	echo "========================================================="
+	echo ""
+	echo "Status AdBlock: $hostiklan"
+	echo ""
+	echo "1. Hidupkan AdBlock"
+	echo $komando
+	echo "3. Hapus Permanen"
+	echo ""
+	echo -n "Pilih perintah diatas: "
+	read iklannya
+	sleep 1
+	if [ $iklannya -eq 1 ]; then
+		echo -n "Cek koneksi"
+		sleep 1
+		echo -n "."
+		echo -n "."
+		sleep 1
+		echo -n "."
+		if ping -q -c 1 -W 1 google.com >/dev/null; then
+			echo "\e[1;32m OK!\e[0m"
+			sleep 1
+			if [ -f /data/hostterinstall ]; then
+				echo "Iklan telah di blokir"
+				echo "Tekan enter untuk kembali"
+				read enterKey
+				adblock
+			else
+				echo "Silahkan tunggu.."
+				echo ""
+				wget -O /sdcard/hosts.txt https://cdn.rawgit.com/bagibray/sharebray/18647d86/hosts &> /dev/null
+				mv /sdcard/hosts /system/etc/hosts &> /dev/null
+				chmod 664 /system/etc/hosts &> /dev/null
+				echo "AdBlok Hidup" >> /data/hostterinstall
+				echo "Selesai, tekan enter untuk kembali"
+				read enterKey
+				adblock
+			fi
+		else
+			echo "\e[1;31m GAGAL!\e[0m"
+			sleep 1
+			echo ""
+			echo "Ulangi kembali"
+			echo "Tekan Enter"
+			read enterKey
+			adblock
+		fi
+	elif [ $iklannya -eq 2 ]; then
+		if [ ! -f /data/bckprstr ]; then
+			mv /system/etc/hosts /system/etc/hosts.bakup
+			echo "127.0.0.1 localhost" >> /system/etc/hosts
+			echo "::1 ip6-localhost" >> /system/etc/hosts
+			echo "change" >> /data/bckprstr
+			chmod 664 /system/etc/hosts
+			rm -f /data/hostterinstall
+			echo -n "Selesai mematikan sementara"
+			read enterKey
+			adblock
+		else
+			rm -f /system/etc/hosts 2>/dev/null
+			rm -f /data/bckprstr 2>/dev/null
+			mv /system/etc/hosts.bakup /system/etc/hosts
+			chmod 664 /system/etc/hosts
+			echo "AdBlock Hidup" >> /data/hostterinstall
+			echo -n "AdBlock aktif kembali"
+			read enterKey
+			adblock
+		fi
+	elif [ $iklannya -eq 3 ]; then
+		if [ -f /data/hostterinstall ]; then
+			echo ""
+			echo ""
+			echo "Menghapus blokiran iklan"
+			sleep 3
+			rm -f /data/hostterinstall
+			rm -f /system/etc/hosts
+			echo '127.0.0.1 localhost' >> /system/etc/hosts
+			echo '::1 localhost #[IPv6]' >> /system/etc/hosts
+			chmod 644 /system/etc/hosts
+			echo "Selesai"
+			echo -n "Tekan enter"
+			read enterKey
+			adblock
+		else
+			echo ""
+			echo ""
+			echo "Pemblokiran iklan belum di pasang, proses dibatalkan"
+			sleep 2
+			adblock
+		fi
+	else
+		clear
+		echo "Perintah salah"
+		sleep 2
+		adblock
+	fi
